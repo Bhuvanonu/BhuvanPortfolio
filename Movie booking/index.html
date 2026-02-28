@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CineSpot - Book Movie Tickets</title>
+    <link rel="icon" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- AngularJS App -->
+    <div ng-controller="MainController as vm">
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <nav class="navbar">
+                    <div class="logo">
+                        <i class="fas fa-film"></i>
+                        <span>CineSpot</span>
+                    </div>
+                    <ul class="nav-links">
+                        <li><a href="#" class="active" ng-click="vm.scrollToTop()">Home</a></li>
+                        <li><a href="#" ng-click="vm.showAllMovies()">Movies</a></li>
+                        <li><a href="" ng-click="vm.scrollToSection('footerSection')">Contact</a></li>
+
+                    </ul>
+                    <div class="auth-buttons">
+                        <div id="user-info" ng-show="vm.currentUser">
+                            <span style="color: var(--primary); font-weight: bold;">
+                                {{vm.currentUser.name}}
+                            </span>
+                        </div>
+
+                        <button class="btn btn-primary" ng-click="vm.handleSignUp()" ng-hide="vm.currentUser">
+                            Sign Up
+                        </button>
+                        <button class="btn btn-outline" ng-click="vm.handleSignOut()" ng-show="vm.currentUser">
+                            Sign Out
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Experience Movies Like Never Before</h1>
+                    <p>Book tickets for the latest blockbusters in premium theaters with the best sound and picture
+                        quality.</p>
+                    <button class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem;"
+                        ng-click="vm.showAllMovies()">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Now Showing Section -->
+            <div class="section-header">
+                <h2 class="section-title">Now Showing</h2>
+                <a href="#" class="view-all" ng-click="vm.showAllMovies('Now Showing', vm.nowShowingMovies, $event)">
+                    View All
+                </a>
+            </div>
+
+            <div class="movies-container">
+                <button class="scroll-btn scroll-left" ng-click="vm.scrollLeft('now-showing')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="movies-grid" id="now-showing-grid">
+                    <div class="movie-card" ng-repeat="movie in vm.nowShowingMovies"
+                        ng-click="vm.openMovieDetails(movie.id, $event)">
+                        <img ng-src="{{movie.poster}}" alt="{{movie.title}}" class="movie-poster">
+                        <div class="movie-info">
+                            <h3 class="movie-title" title="{{movie.title}}">{{movie.title}}</h3>
+                            <div class="movie-meta">
+                                <span>{{movie.genre.split(',')[0]}}</span>
+                                <span><i class="fas fa-star" style="color: #ffcc00;"></i> {{movie.rating}}</span>
+                            </div>
+                            <div class="movie-actions">
+                                <button class="like-btn" ng-class="{'active': movie.liked}"
+                                    ng-click="vm.toggleLike(movie.id, $event)">
+                                    <i class="fa{{movie.liked ? 's' : 'r'}} fa-heart"></i>
+                                </button>
+                                <button class="book-btn" ng-click="vm.openMovieDetails(movie.id, $event)">
+                                    Book Tickets
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="scroll-btn scroll-right" ng-click="vm.scrollRight('now-showing')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Recommended Movies Section -->
+            <div class="section-header">
+                <h2 class="section-title">Recommended For You</h2>
+                <a href="#" class="view-all" ng-click="vm.showAllMovies('Recommended', vm.recommendedMovies, $event)">
+                    View All
+                </a>
+            </div>
+
+            <div class="movies-container">
+                <button class="scroll-btn scroll-left" ng-click="vm.scrollLeft('recommended')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="movies-grid" id="recommended-grid">
+                    <div class="movie-card" ng-repeat="movie in vm.recommendedMovies"
+                        ng-click="vm.openMovieDetails(movie.id, $event)">
+                        <img ng-src="{{movie.poster}}" alt="{{movie.title}}" class="movie-poster">
+                        <div class="movie-info">
+                            <h3 class="movie-title" title="{{movie.title}}">{{movie.title}}</h3>
+                            <div class="movie-meta">
+                                <span>{{movie.genre.split(',')[0]}}</span>
+                                <span><i class="fas fa-star" style="color: #ffcc00;"></i> {{movie.rating}}</span>
+                            </div>
+                            <div class="movie-actions">
+                                <button class="like-btn" ng-class="{'active': movie.liked}"
+                                    ng-click="vm.toggleLike(movie.id, $event)">
+                                    <i class="fa{{movie.liked ? 's' : 'r'}} fa-heart"></i>
+                                </button>
+                                <button class="book-btn" ng-click="vm.openMovieDetails(movie.id, $event)">
+                                    Book Tickets
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="scroll-btn scroll-right" ng-click="vm.scrollRight('recommended')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <footer id="footerSection">
+                <div class="container">
+                    <div class="footer-content">
+                        <div class="footer-column">
+                            <h3>CineSpot</h3>
+                            <p>Your ultimate destination for movie tickets and entertainment. Experience the magic of
+                                cinema
+                                with us.</p>
+                            <div class="social-icons">
+                                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fab fa-instagram"></i></a>
+                                <a href="#"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                        <div class="footer-column">
+                            <h3>Quick Links</h3>
+                            <ul class="footer-links">
+                                <li><a href="#" ng-click="vm.scrollToTop()">Home</a></li>
+                                <li><a href="#" ng-click="vm.showAllMovies()">Movies</a></li>
+                                <li><a href="#">Theaters</a></li>
+                                <li><a href="#">My Bookings</a></li>
+                                <li><a href="#">Offers</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h3>Contact Us</h3>
+                            <ul class="footer-links">
+                                <li><i class="fas fa-map-marker-alt"></i> 123 Cinema Street, Movie City</li>
+                                <li><i class="fas fa-phone"></i> +1 234 567 8900</li>
+                                <li><i class="fas fa-envelope"></i> info@cinespot.com</li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h3>Newsletter</h3>
+                            <p>Subscribe to get special offers and movie updates.</p>
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Your email address">
+                                <button class="btn btn-primary"
+                                    style="width: 100%; margin-top: 10px;">Subscribe</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="copyright">
+                        <p>&copy; 2026 CineSpot. All rights reserved.Developed with ❤️ by Bhuvan G R</p>
+                    </div>
+                </div>
+            </footer>
+
+            <!-- Login Modal -->
+            <div class="login-modal" ng-class="{'show': vm.showLoginModal}">
+                <div class="login-content">
+                    <span class="close-btn" ng-click="vm.closeLoginModal()">&times;</span>
+
+                    <p style="text-align: center; margin-top: 15px;">
+                        Don't have an account?
+                        <a href="#" style="color: var(--primary);" ng-click="vm.handleSignUp()">
+                            Sign Up
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Movie Details Modal -->
+            <div class="modal" ng-class="{'show': vm.showMovieModal}">
+                <div class="modal-content">
+                    <span class="close-btn" ng-click="vm.closeMovieModal()">&times;</span>
+
+                    <!-- Movie Details -->
+                    <div ng-show="vm.currentStep === 'details'">
+                        <div class="movie-details">
+                            <img ng-src="{{vm.selectedMovie.poster}}" alt="{{vm.selectedMovie.title}}"
+                                class="movie-details-poster">
+                            <div class="movie-details-info">
+                                <h2>{{vm.selectedMovie.title}}</h2>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>{{vm.selectedMovie.rating}}/10</span>
+                                </div>
+                                <p>{{vm.selectedMovie.genre}}</p>
+                                <p>{{vm.selectedMovie.duration}}</p>
+                                <p>{{vm.selectedMovie.description}}</p>
+                                <div class="movie-actions">
+                                    <button class="like-btn" ng-class="{'active': vm.selectedMovie.liked}"
+                                        ng-click="vm.toggleLikeModal()">
+                                        <i class="fa{{vm.selectedMovie.liked ? 's' : 'r'}} fa-heart"></i>
+                                    </button>
+                                    <button class="book-btn" ng-click="vm.showStep('showtimes')">
+                                        Book Tickets
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Showtime Selection -->
+                    <div ng-show="vm.currentStep === 'showtimes'">
+                        <div class="showtimes">
+                            <h3>Select Show Time</h3>
+                            <div class="date-selector">
+                                <div class="date-option" ng-repeat="date in vm.showDates"
+                                    ng-class="{'active': date.active}" ng-click="vm.selectDate(date)">
+                                    {{date.label}}
+                                </div>
+                            </div>
+                            <div class="time-slots">
+                                <div class="time-slot" ng-repeat="time in vm.showTimes"
+                                    ng-class="{'active': time.active}" ng-click="vm.selectTime(time)">
+                                    {{time.label}}
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" ng-click="vm.showStep('seats')"
+                            style="width: 100%; margin-top: 20px;">
+                            Select Seats
+                        </button>
+                    </div>
+
+                    <!-- Seat Selection -->
+                    <div ng-show="vm.currentStep === 'seats'">
+                        <div class="seat-selection">
+                            <h3>Select Your Seats</h3>
+                            <div class="screen">SCREEN</div>
+                            <div class="seats-container">
+                                <div class="seat-row" ng-repeat="row in vm.seatRows">
+                                    <div class="seat" ng-repeat="seat in row.seats" ng-class="{
+                                        'available': seat.status === 'available',
+                                        'selected': seat.status === 'selected',
+                                        'occupied': seat.status === 'occupied',
+                                        'vip': seat.vip
+                                     }" ng-click="vm.selectSeat(seat)" ng-disabled="seat.status === 'occupied'">
+                                        {{seat.number}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="seat-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #ccc;"></div>
+                                    <span>Available</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #4CAF50;"></div>
+                                    <span>Selected</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #f44336;"></div>
+                                    <span>Sold</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #ffcc00;"></div>
+                                    <span>VIP</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="amount-summary">
+                            <div class="amount-row">
+                                <span>Selected Seats:</span>
+                                <span>{{vm.getSelectedSeatsText()}}</span>
+                            </div>
+                            <div class="amount-row">
+                                <span>Ticket Price:</span>
+                                <span>₹{{vm.ticketPrice}} x {{vm.selectedSeats.length}}</span>
+                            </div>
+                            <div class="amount-row">
+                                <span>GST (18%):</span>
+                                <span>₹{{vm.getGST() | number:0}}</span>
+                            </div>
+                            <div class="amount-row amount-total">
+                                <span>Total Amount:</span>
+                                <span>₹{{vm.getTotalAmount() | number:0}}</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" ng-click="vm.showStep('payment')"
+                            ng-disabled="vm.selectedSeats.length === 0" style="width: 100%; margin-top: 20px;">
+                            Proceed to Payment
+                        </button>
+                    </div>
+
+                    <!-- Payment Section -->
+                    <div ng-show="vm.currentStep === 'payment'">
+                        <div class="payment-section">
+                            <h3>Complete Your Payment</h3>
+
+                            <div class="payment-layout">
+                                <div class="payment-form-container">
+                                    <div class="payment-options">
+                                        <div class="payment-option" ng-class="{'active': vm.paymentMethod === 'upi'}"
+                                            ng-click="vm.selectPaymentMethod('upi')">
+                                            <i class="fas fa-mobile-alt"></i>
+                                            <span>Pay any UPI App</span>
+                                        </div>
+                                        <div class="payment-option" ng-class="{'active': vm.paymentMethod === 'card'}"
+                                            ng-click="vm.selectPaymentMethod('card')">
+                                            <i class="far fa-credit-card"></i>
+                                            <span>Debit/Credit Card</span>
+                                        </div>
+                                        <div class="payment-option" ng-class="{'active': vm.paymentMethod === 'wallet'}"
+                                            ng-click="vm.selectPaymentMethod('wallet')">
+                                            <i class="fas fa-wallet"></i>
+                                            <span>Mobile Wallets</span>
+                                        </div>
+                                        <div class="payment-option"
+                                            ng-class="{'active': vm.paymentMethod === 'netbanking'}"
+                                            ng-click="vm.selectPaymentMethod('netbanking')">
+                                            <i class="fas fa-university"></i>
+                                            <span>Net Banking</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- UPI Payment Form -->
+                                    <div class="payment-form" ng-show="vm.paymentMethod === 'upi'">
+                                        <div class="form-group">
+                                            <label for="upi-id">UPI ID</label>
+                                            <input type="text" id="upi-id" class="form-control"
+                                                placeholder="yourname@upi" ng-model="vm.paymentDetails.upiId">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phone">Phone Number</label>
+                                            <input type="tel" id="phone" class="form-control"
+                                                placeholder="Enter your phone number"
+                                                ng-model="vm.paymentDetails.phone">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email ID</label>
+                                            <input type="email" id="email" class="form-control"
+                                                placeholder="Enter your email" ng-model="vm.paymentDetails.email">
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Payment Form -->
+                                    <div class="payment-form" ng-show="vm.paymentMethod === 'card'">
+                                        <div class="form-group">
+                                            <label for="card-number">Card Number</label>
+                                            <input type="text" id="card-number" class="form-control"
+                                                placeholder="1234 5678 9012 3456"
+                                                ng-model="vm.paymentDetails.cardNumber">
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="expiry-date">Expiry Date</label>
+                                                <input type="text" id="expiry-date" class="form-control"
+                                                    placeholder="MM/YY" ng-model="vm.paymentDetails.expiryDate">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="cvv">CVV</label>
+                                                <input type="text" id="cvv" class="form-control" placeholder="123"
+                                                    ng-model="vm.paymentDetails.cvv">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="card-name">Name on Card</label>
+                                            <input type="text" id="card-name" class="form-control"
+                                                placeholder="Enter name as on card"
+                                                ng-model="vm.paymentDetails.cardName">
+                                        </div>
+                                    </div>
+
+                                    <!-- Amount Summary -->
+                                    <div class="amount-summary">
+                                        <div class="amount-row">
+                                            <span>Amount Payable:</span>
+                                            <span>₹{{vm.getTotalAmount() | number:0}}</span>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-primary" ng-click="vm.processPayment()"
+                                        style="width: 100%; margin-top: 20px;">
+                                        Make Payment
+                                    </button>
+                                </div>
+
+                                <!-- Ticket Display -->
+                                <div class="ticket-display-container">
+                                    <div class="ticket-preview" id="payment-ticket">
+                                        <div class="ticket-header">
+                                            <h2>CineSpot</h2>
+                                            <p>Movie Ticket</p>
+                                        </div>
+                                        <div class="ticket-details">
+                                            <div class="ticket-section">
+                                                <h3>Movie</h3>
+                                                <p class="ticket-movie-title">{{vm.selectedMovie.title}}</p>
+                                            </div>
+                                            <div class="ticket-section">
+                                                <h3>Date & Time</h3>
+                                                <p>{{vm.getShowTime()}}</p>
+                                            </div>
+                                            <div class="ticket-section">
+                                                <h3>Seats</h3>
+                                                <p>{{vm.getSelectedSeatsText()}}</p>
+                                            </div>
+                                            <div class="ticket-section">
+                                                <h3>Booking ID</h3>
+                                                <p>{{vm.bookingId}}</p>
+                                            </div>
+                                            <div class="ticket-section">
+                                                <h3>Total Paid</h3>
+                                                <p>₹{{vm.getTotalAmount() | number:0}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="ticket-footer">
+                                            <p>Thank you for choosing CineSpot. Enjoy your movie!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Section -->
+                    <div ng-show="vm.currentStep === 'confirmation'">
+                        <div class="confirmation">
+                            <div class="confirmation-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h2>Booking Confirmed!</h2>
+                            <p>Thank you for your booking. Your tickets have been confirmed.</p>
+
+                            <div class="ticket-preview-container">
+                                <div class="ticket-preview" id="ticket-template">
+                                    <div class="ticket-header">
+                                        <h2>CineSpot</h2>
+                                        <p>Movie Ticket</p>
+                                    </div>
+                                    <div class="ticket-details">
+                                        <div class="ticket-section">
+                                            <h3>Movie</h3>
+                                            <p class="ticket-movie-title">{{vm.selectedMovie.title}}</p>
+                                        </div>
+                                        <div class="ticket-section">
+                                            <h3>Date & Time</h3>
+                                            <p>{{vm.getShowTime()}}</p>
+                                        </div>
+                                        <div class="ticket-section">
+                                            <h3>Seats</h3>
+                                            <p>{{vm.getSelectedSeatsText()}}</p>
+                                        </div>
+                                        <div class="ticket-section">
+                                            <h3>Booking ID</h3>
+                                            <p>{{vm.bookingId}}</p>
+                                        </div>
+                                        <div class="ticket-section">
+                                            <h3>Total Paid</h3>
+                                            <p>₹{{vm.getTotalAmount() | number:0}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="ticket-footer">
+                                        <p>Thank you for choosing CineSpot. Enjoy your movie!</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="download-section">
+                                <button class="download-btn" ng-click="vm.downloadTicket()">
+                                    <i class="fas fa-download"></i> Download Ticket
+                                </button>
+                                <div class="instructions">
+                                    <p>Your ticket will be saved as an image in your downloads folder</p>
+                                </div>
+                                <div class="success-message" ng-class="{'show': vm.showSuccessMessage}">
+                                    <i class="fas fa-check-circle"></i> Ticket downloaded successfully!
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn btn-outline" ng-click="vm.backToHome()">
+                                    <i class="fas fa-home"></i> Back to Home
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Movies Modal -->
+            <div class="modal" ng-class="{'show': vm.showAllMoviesModal}">
+                <div class="modal-content" style="max-width: 1200px;">
+                    <span class="close-btn" ng-click="vm.closeAllMoviesModal()">&times;</span>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                        <h1 style="color: var(--primary);">{{vm.allMoviesTitle}}</h1>
+                        <button class="btn btn-outline" ng-click="vm.closeAllMoviesModal()" style="font-size: 1.2rem;">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px;">
+                        <div class="movie-card" ng-repeat="movie in vm.allMoviesList"
+                            ng-click="vm.openMovieDetails(movie.id, $event)">
+                            <img ng-src="{{movie.poster}}" alt="{{movie.title}}" class="movie-poster">
+                            <div class="movie-info">
+                                <h3 class="movie-title" title="{{movie.title}}">{{movie.title}}</h3>
+                                <div class="movie-meta">
+                                    <span>{{movie.genre.split(',')[0]}}</span>
+                                    <span><i class="fas fa-star" style="color: #ffcc00;"></i> {{movie.rating}}</span>
+                                </div>
+                                <div class="movie-actions">
+                                    <button class="like-btn" ng-class="{'active': movie.liked}"
+                                        ng-click="vm.toggleLike(movie.id, $event)">
+                                        <i class="fa{{movie.liked ? 's' : 'r'}} fa-heart"></i>
+                                    </button>
+                                    <button class="book-btn" ng-click="vm.openMovieDetails(movie.id, $event)">
+                                        Book Tickets
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+<script src="app.js"></script>
+</body>
+</html>
