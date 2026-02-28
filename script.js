@@ -179,7 +179,7 @@ document.getElementById('backToTop').addEventListener('click', function (e) {
 // Social Links
 function openSocial(platform) {
     const urls = {
-        facebook: 'https://facebook.com',
+        facebook: 'https://www.facebook.com/bhuvan.gr.58',
         instagram: 'https://instagram.com/____bh____uvan___',
         whatsapp: 'https://wa.me/918088836667',
         email: 'mailto:bhuvan7536@gmail.com'
@@ -231,6 +231,7 @@ function initAnimations() {
     window.addEventListener('scroll', animateProgressBars);
     animateProgressBars(); // Initial check
 }
+
 
 
 
