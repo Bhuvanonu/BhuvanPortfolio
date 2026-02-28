@@ -181,7 +181,7 @@ function openSocial(platform) {
     const urls = {
         facebook: 'https://facebook.com',
         instagram: 'https://instagram.com/____bh____uvan___',
-        whatsapp: 'https://wa.me/+918088836667',
+        whatsapp: 'https://wa.me/918088836667',
         email: 'mailto:bhuvan7536@gmail.com'
     };
 
@@ -231,6 +231,7 @@ function initAnimations() {
     window.addEventListener('scroll', animateProgressBars);
     animateProgressBars(); // Initial check
 }
+
 
 
 
